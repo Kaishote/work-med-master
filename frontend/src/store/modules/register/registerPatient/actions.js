@@ -1,26 +1,51 @@
-export function registerPatientInRequest(
-  formData,
+export function registerRoomInRequest(
+  name,
+  floor,
+  number,
   navigate,
 ) {
   return {
-    type: '@register/REGISTERPATIENT_IN_REQUEST',
+    type: '@register/REGISTERROOM_IN_REQUEST',
     payload: {
-      formData,
+      name, floor, number, navigate,
+    },
+  };
+}
+
+export function registerRoomInSuccess(token, room) {
+  return {
+    type: '@register/REGISTERROOM_IN_SUCCESS',
+    payload: { token, room },
+  };
+}
+
+export function updateRoomRequest(id, data, navigate) {
+  return {
+    type: '@room/UPDATE_ROOM_REQUEST',
+    payload: {
+      id,
+      data,
       navigate,
     },
   };
 }
 
-export function registerPatientInSuccess(token, patient) {
+export function updateRoomSuccess(room) {
   return {
-    type: '@register/REGISTERPATIENT_IN_SUCCESS',
-    payload: { token, patient },
+    type: '@room/UPDATE_ROOM_SUCCESS',
+    payload: { room },
   };
 }
 
-export function removePatient(id) {
+export function updateRoomFailure() {
   return {
-    type: '@remove/REMOVE_PATIENT',
+    type: '@room/UPDATE_ROOM_FAILURE',
+  };
+}
+
+export function removeRoom(id) {
+  return {
+    type: '@remove/REMOVE_ROOM',
     payload: {
       id,
     },
@@ -29,7 +54,7 @@ export function removePatient(id) {
 
 export function removeFailure() {
   return {
-    type: '@remove/REMOVE_PATIENT',
+    type: '@remove/REMOVE_ROOM',
   };
 }
 

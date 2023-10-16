@@ -5,38 +5,53 @@ import {
 import { toast } from 'react-toastify';
 import api from '../../../../services/api';
 
-import { registerPatientInSuccess, registerFailure, removeFailure } from './actions';
+import {
+  registerRoomInSuccess, registerFailure, removeFailure, updateRoomSuccess, updateRoomFailure,
+} from './actions';
 
-export function* registerPatient({ payload }) {
+export function* registerRoom({ payload }) {
   try {
-    const { navigate } = payload;
+    const {
+      name, number, floor, navigate,
+    } = payload;
 
-    const response = yield call(api.post, 'patients', payload.formData);
+    const response = yield call(api.post, 'rooms', {
+      name,
+      number,
+      floor,
+    });
 
-    const { token, patient } = response.data;
+    const { token, room } = response.data;
 
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-    yield put(registerPatientInSuccess(token, patient));
+    yield put(registerRoomInSuccess(token, room));
 
-    navigate('/list/patient');
+    navigate('/list/room');
   } catch (err) {
     toast.error('Falha no cadastro, verifique os dados');
     yield put(registerFailure());
   }
 }
 
-export function* removePatient({
-  payload,
-}) {
+export function* updateRoom({ payload }) {
   try {
-    const { id } = payload;
+    const {
+      id, data, navigate,
+    } = payload;
 
-    toast.success('Excluído com Sucesso');
-    yield call(api.delete, `patients/${id}`);
+    const room = data;
+
+    const response = yield call(api.put, `rooms/${id}`, room);
+
+    toast.success('Sala atualizada com sucesso!');
+
+    yield put(updateRoomSuccess(response.data));
+
+    navigate('/list/room');
   } catch (err) {
-    toast.error('Item já excluído');
-    yield put(removeFailure());
+    toast.error('Erro a atualizar paciente, verifique seus dados!');
+    yield put(updateRoomFailure);
   }
 }
 
@@ -50,8 +65,23 @@ export function setToken({ payload }) {
   }
 }
 
+export function* removeRoom({
+  payload,
+}) {
+  try {
+    const { id } = payload;
+
+    toast.success('Excluído com Sucesso');
+    yield call(api.delete, `rooms/${id}`);
+  } catch (err) {
+    toast.error('Item já excluído');
+    yield put(removeFailure);
+  }
+}
+
 export default all([
   takeLatest('persist/REHYDRATE', setToken),
-  takeLatest('@register/REGISTERPATIENT_IN_REQUEST', registerPatient),
-  takeLatest('@remove/REMOVE_PATIENT', removePatient),
+  takeLatest('@register/REGISTERROOM_IN_REQUEST', registerRoom),
+  takeLatest('@remove/REMOVE_ROOM', removeRoom),
+  takeLatest('@room/UPDATE_ROOM_REQUEST', updateRoom),
 ]);
